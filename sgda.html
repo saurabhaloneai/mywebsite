@@ -1,0 +1,677 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>On the Stochastic Gradient Descent Algorithm (SGDA)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_baground {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="847ac39f-8512-4a97-b1c1-da12ccb2e694" class="page sans"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/met_canaletto_1720.jpg" style="object-position:center 100%"/><div class="page-header-icon page-header-icon-with-cover"><span class="icon">😶‍🌫️</span></div><h1 class="page-title"><strong>On the Stochastic Gradient Descent Algorithm (SGDA)</strong></h1><p class="page-description"></p><table class="properties"><tbody><tr class="property-row property-row-person"><th><span class="icon property-icon"><svg role="graphics-symbol" viewBox="0 0 16 16" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.45);flex-shrink:0" class="typesPerson"><path d="M10.9536 7.90088C12.217 7.90088 13.2559 6.79468 13.2559 5.38525C13.2559 4.01514 12.2114 2.92017 10.9536 2.92017C9.70142 2.92017 8.65137 4.02637 8.65698 5.39087C8.6626 6.79468 9.69019 7.90088 10.9536 7.90088ZM4.4231 8.03003C5.52368 8.03003 6.42212 7.05859 6.42212 5.83447C6.42212 4.63843 5.51245 3.68945 4.4231 3.68945C3.33374 3.68945 2.41846 4.64966 2.41846 5.84009C2.42407 7.05859 3.32251 8.03003 4.4231 8.03003ZM1.37964 13.168H5.49561C4.87231 12.292 5.43384 10.6074 6.78711 9.51807C6.18628 9.14746 5.37769 8.87231 4.4231 8.87231C1.95239 8.87231 0.262207 10.6917 0.262207 12.1628C0.262207 12.7974 0.548584 13.168 1.37964 13.168ZM7.50024 13.168H14.407C15.4009 13.168 15.7322 12.8423 15.7322 12.2864C15.7322 10.8489 13.8679 8.88354 10.9536 8.88354C8.04492 8.88354 6.17505 10.8489 6.17505 12.2864C6.17505 12.8423 6.50635 13.168 7.50024 13.168Z"></path></svg></span>Owner</th><td><span class="user"><img class="icon user-icon"/>Saurabh Alone</span></td></tr><tr class="property-row property-row-multi_select"><th><span class="icon property-icon"><svg role="graphics-symbol" viewBox="0 0 16 16" style="width:14px;height:14px;display:block;fill:rgba(55, 53, 47, 0.45);flex-shrink:0" class="typesMultipleSelect"><path d="M1.91602 4.83789C2.44238 4.83789 2.87305 4.40723 2.87305 3.87402C2.87305 3.34766 2.44238 2.91699 1.91602 2.91699C1.38281 2.91699 0.952148 3.34766 0.952148 3.87402C0.952148 4.40723 1.38281 4.83789 1.91602 4.83789ZM5.1084 4.52344H14.3984C14.7607 4.52344 15.0479 4.23633 15.0479 3.87402C15.0479 3.51172 14.7607 3.22461 14.3984 3.22461H5.1084C4.74609 3.22461 4.45898 3.51172 4.45898 3.87402C4.45898 4.23633 4.74609 4.52344 5.1084 4.52344ZM1.91602 9.03516C2.44238 9.03516 2.87305 8.60449 2.87305 8.07129C2.87305 7.54492 2.44238 7.11426 1.91602 7.11426C1.38281 7.11426 0.952148 7.54492 0.952148 8.07129C0.952148 8.60449 1.38281 9.03516 1.91602 9.03516ZM5.1084 8.7207H14.3984C14.7607 8.7207 15.0479 8.43359 15.0479 8.07129C15.0479 7.70898 14.7607 7.42188 14.3984 7.42188H5.1084C4.74609 7.42188 4.45898 7.70898 4.45898 8.07129C4.45898 8.43359 4.74609 8.7207 5.1084 8.7207ZM1.91602 13.2324C2.44238 13.2324 2.87305 12.8018 2.87305 12.2686C2.87305 11.7422 2.44238 11.3115 1.91602 11.3115C1.38281 11.3115 0.952148 11.7422 0.952148 12.2686C0.952148 12.8018 1.38281 13.2324 1.91602 13.2324ZM5.1084 12.918H14.3984C14.7607 12.918 15.0479 12.6309 15.0479 12.2686C15.0479 11.9062 14.7607 11.6191 14.3984 11.6191H5.1084C4.74609 11.6191 4.45898 11.9062 4.45898 12.2686C4.45898 12.6309 4.74609 12.918 5.1084 12.918Z"></path></svg></span>Tags</th><td></td></tr></tbody></table></header><div class="page-body"><hr id="7a1b6841-c2e5-41aa-b63c-b2be0f4e9551"/><p id="833a72b6-bdd8-4018-8e55-b35d465e5d72" class="">This post will be a culmination of:</p><p id="c88f1093-e8a3-4082-bd0c-723d37f6b104" class=""><em><strong>1. Basic notion of SGDA.</strong></em></p><p id="57da027f-aac7-45b5-a793-6fcbe5d23282" class=""><em><strong>2. Key concepts necessary to understand SGD:</strong></em></p><p id="d29d1430-c0f8-4f09-a2a6-3648443a3c26" class=""><em><strong>3. The algorithm.</strong></em></p><p id="518e8ca9-ba35-4e02-ae6e-d3ee39fde8f2" class=""><em><strong>4. Benefits &amp; Challenges of SGDA.</strong></em></p><p id="d199a934-fe46-4d97-b14d-21efc2c6b046" class=""><em><strong>5. An example in the field of ML with a code snippet.</strong></em></p><p id="26fd2376-260c-4803-af40-e60ea2c4d934" class="">So please stick around till you reach the snippet!</p><hr id="a1c2dce0-602b-4857-94bf-9849f37c8058"/><p id="be44432c-becc-4c07-9ae4-714f39fd1f4b" class=""><mark class="highlight-blue_background"><strong><em>1. Basic notion of SGDA:</em></strong></mark></p><ul id="c0841673-d808-4eb9-a91e-2edc520d0cef" class="bulleted-list"><li style="list-style-type:disc">SGDA is an optimization algorithm that&#x27;s widely used in ML/Optimization tasks.</li></ul><ul id="4c011306-2c5d-494b-b03a-84b5ee46c8de" class="bulleted-list"><li style="list-style-type:disc">It&#x27;s an extension of the traditional gradient descent method that aims to efficiently minimize (or maximize) an objective function.</li></ul><ul id="76508838-54fc-4699-bbf9-086b22bdcf99" class="bulleted-list"><li style="list-style-type:disc">It iteratively updates the model&#x27;s parameters based on small random subsets of the data.</li></ul><ul id="aeadf784-fc72-4855-a825-83b33e03ac43" class="bulleted-list"><li style="list-style-type:disc">This approach allows SGD to handle large datasets more efficiently compared to traditional gradient descent.</li></ul><hr id="8311f778-9000-4985-9406-c259ebfd2c07"/><p id="c9a65c2c-6de3-458f-8f71-e1b7b339b97b" class=""><mark class="highlight-blue_background"><em><strong>2. Key concepts necessary to understand SGDA:</strong></em></mark></p><ul id="19a934f5-914a-433b-941d-54c9ce652912" class="bulleted-list"><li style="list-style-type:disc"><em> Objective Function:</em> In ML, the objective function represents the &quot;cost&quot; or &quot;loss&quot; associated with the model&#x27;s predictions compared to the actual data. The goal is to minimize this function to find the best-fitting model parameters.</li></ul><ul id="9b1db432-f937-451f-acf8-8c0270eee9a3" class="bulleted-list"><li style="list-style-type:disc"><em>Gradient:</em> The gradient of the objective function indicates the direction of steepest increase. In optimization, the gradient points towards the optimal solution. Minimizing the negative gradient moves the solution closer to the minimum of the function.</li></ul><ul id="c77e61fa-e61d-417a-8b17-e7ffdcf80c22" class="bulleted-list"><li style="list-style-type:disc"><em>Learning Rate:</em> The learning rate &#x27;α&#x27; determines the step size of parameter updates. A large learning rate might lead to overshooting the minimum, while a small learning rate can slow down convergence. It&#x27;s a hyperparameter that needs to be carefully tuned.</li></ul><ul id="be5fc519-88be-4236-81d8-bbc9ecb02d4c" class="bulleted-list"><li style="list-style-type:disc"><em>Batch Size:</em> In traditional gradient descent, the entire dataset is used to compute the gradient in each iteration. In SGD, a random subset (mini-batch) of the data is used. The size of this subset is the batch size.</li></ul><hr id="b96e3659-3a0f-4ef2-a06c-a814178062b9"/><p id="655933d6-1db9-4bbf-bb23-7eb7e8ce30b5" class=""><mark class="highlight-blue_background"><em><strong>3. The SGD Algorithm:</strong></em></mark></p><p id="7b94762b-b657-4673-a1b5-206557efe307" class=""><em>What is the underlying problem?</em></p><p id="4c783b57-611c-4112-895e-b662962e9661" class="">Given an objective function 𝒻(θ) that needs to be minimized (or maximized) with respect to parameters θ, and a dataset 𝒟 consisting of data points (xᵢ,yᵢ).</p><ul id="23656a15-998d-4d08-8d55-927a7fd6198d" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><strong>Step 1</strong></mark></li></ul><p id="0d12a7c7-1cb4-439f-86ac-2eafe7c1868a" class=""><em>Initialization:</em> Choose an initial guess for the parameters θ₀.</p><ul id="96259f6a-ec0d-4c4d-96ac-234926444ec0" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><strong>Step 2</strong></mark></li></ul><p id="b0f57e86-359d-4bb3-b02f-9e62da6b789f" class=""><em>Hyperparameters:</em></p><ul id="c2a635d5-50b6-480d-9d05-d6523ddb3695" class="bulleted-list"><li style="list-style-type:disc">Choose the learning rate α.</li></ul><ul id="7f37303c-c8c5-42ff-81f8-a16ede69188e" class="bulleted-list"><li style="list-style-type:disc">Choose the number of iterations T.</li></ul><ul id="b0ecfb06-949d-432d-9855-0e794c66e907" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><strong>Step 3</strong></mark></li></ul><p id="92336424-4a20-448b-b4ab-837447f35442" class=""><em>Iterations:</em> For t=1 to T:</p><ul id="625d865b-6fb4-4d8e-9142-d642a7b23e31" class="bulleted-list"><li style="list-style-type:disc">Randomly shuffle 𝒟.</li></ul><ul id="5df748bc-5db8-455d-ae36-47ba1935c3b1" class="bulleted-list"><li style="list-style-type:disc">Compute the gradient of the loss function w.r.t θ using (xᵢ.yᵢ): ∇𝒻ᵢ(θ)=∂/∂θ Loss(yᵢ,𝒻(xᵢ;θ)).</li></ul><ul id="63398272-7695-45c0-b751-f23574d3317f" class="bulleted-list"><li style="list-style-type:disc">Update the parameters using the stochastic gradient and learning rate: θ(t+1)=θ(t)−α∇𝒻ᵢ(θ(t)).</li></ul><ul id="0a1ffdb8-7c5e-496c-8694-435c7c540172" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><strong>Step 4</strong></mark></li></ul><p id="0c5f96e7-bbea-47da-80e2-985a50e725da" class=""><em>Convergence check: </em>Monitor the change in the objective function or the norm of the gradient. Stop if the change is below a predefined threshold, indicating convergence, or if the maximum number of iterations T is reached.</p><ul id="ff814e89-589d-4418-960d-881cc9509584" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-teal"><strong>Step 5</strong></mark></li></ul><p id="9b1ed0bb-997f-46c1-a710-881daca8b1a4" class=""><em>Output:</em> Return the final parameter values θ(T), which are the estimated optimal parameters that minimize (or maximize) the objective function.</p><hr id="cba80c3e-3118-40e3-97dc-fd8697de5428"/><p id="4f2306fd-346b-4632-a740-c937acf0c6f5" class=""><mark class="highlight-blue_background"><strong>Some notes on SGDA:</strong></mark></p><ul id="19cb178b-0f7d-4b64-939c-4435e8ebd79a" class="bulleted-list"><li style="list-style-type:disc">The objective function 𝒻(θ) represents the loss or cost function that measures the discrepancy between model predictions and actual data.</li></ul><ul id="1cd0fe7a-e247-4f0a-8d60-0f59e8f261d5" class="bulleted-list"><li style="list-style-type:disc">The gradient ∇𝒻ᵢ(θ) represents the direction of steepest increase of the loss function with respect to the current data point.</li></ul><ul id="ab03f1b9-e7d9-45b4-9e1b-d81f964eea44" class="bulleted-list"><li style="list-style-type:disc">In practice, stochastic gradient descent is often implemented using mini-batches (subset of the dataset) to balance computational efficiency and gradient noise.</li></ul><ul id="c16f8280-51e9-4cda-bc19-94f8ae2a129d" class="bulleted-list"><li style="list-style-type:disc">Learning rate α determines the step size of each update. It&#x27;s a critical hyperparameter that affects convergence.</li></ul><ul id="f4b7834a-72ec-4417-9472-f6eec403363a" class="bulleted-list"><li style="list-style-type:disc">The convergence criterion could be based on the change in the objective function or the norm of the gradient. It ensures that the algorithm stops when further updates don&#x27;t result in significant improvements.</li></ul><hr id="2437cced-dab3-4d43-aa49-5f00e08d6a62"/><p id="26336a4b-90ac-4ac8-b3db-2c4463a1f9f3" class=""><mark class="highlight-blue_background"><em><strong>4. Benefits of SGDA:</strong></em></mark></p><ul id="5b00ffe8-e909-48d4-b6cf-9bb6b20c1b65" class="bulleted-list"><li style="list-style-type:disc"><em>Efficiency:</em> Using small mini-batches instead of the entire dataset makes computations faster and requires less memory, making SGDA suitable for large datasets.</li></ul><ul id="11600eb3-2961-459d-af55-f321944ce230" class="bulleted-list"><li style="list-style-type:disc"><em>Stochastic Nature:</em> The randomness introduced by using mini-batches adds noise to the optimization process. This noise can help escape local minima and explore the parameter space more effectively.</li></ul><ul id="96982984-b359-4fc7-916b-d586640a4caa" class="bulleted-list"><li style="list-style-type:disc"><em>Online Learning</em>: SGDA can be used for online learning, where models are updated continuously as new data becomes available.</li></ul><ul id="0dd4295a-b1d2-4c2e-bab7-5544d507f17f" class="bulleted-list"><li style="list-style-type:disc"><em>Parallelization:</em> SGDA can be easily parallelized since each mini-batch computation is independent.</li></ul><hr id="79f8aecd-caef-4834-b2f5-69f83624f0cf"/><p id="783cc29e-1e71-45a9-9a02-a4b4953d6a99" class=""><mark class="highlight-blue_background"><strong>Drawbacks/Challenges of SGDA:</strong></mark></p><ul id="e89ea491-710e-4e26-b841-be779355cbf8" class="bulleted-list"><li style="list-style-type:disc"><em>Learning Rate:</em> Choosing the appropriate learning rate is crucial. A learning rate that&#x27;s too high can lead to instability, and one that&#x27;s too low can slow down convergence.</li></ul><ul id="592482b0-b5ea-4b90-93ac-00150876f516" class="bulleted-list"><li style="list-style-type:disc"><em>Learning Rate Scheduling:</em> Adaptive learning rate methods, such as AdaGrad, RMSProp, and Adam, adjust the learning rate during training to mitigate the need for manual tuning.</li></ul><ul id="6fbfaae6-b7ca-41b8-94a0-bf25e70dc0ab" class="bulleted-list"><li style="list-style-type:disc"><em>Noise:</em> While noise can help escape local minima, it can also lead to convergence to suboptimal solutions.</li></ul><ul id="6ebfca92-c5cc-49c7-815b-2c81c14c2c71" class="bulleted-list"><li style="list-style-type:disc"><em>Convergence:</em> SGDA might converge to a solution close to the minimum, but not exactly at the minimum, due to the randomness and noisy updates.</li></ul><ul id="d8dc9454-f2e3-4334-9f1c-6d3d1b04009c" class="bulleted-list"><li style="list-style-type:disc"><em>Batch Size:</em> The choice of batch size affects the trade-off between computation time and convergence stability.</li></ul><hr id="95a9dc6b-9488-4b2b-bdee-3b6e2055461e"/><p id="f691743f-b183-4530-9e5b-c806dc16d35c" class=""><mark class="highlight-blue_background"><em><strong>5. An example in the field of ML with a code snippet:</strong></em></mark></p><ul id="2d430e2b-9be7-422a-8d59-ff78bac2f699" class="bulleted-list"><li style="list-style-type:disc">Linear regression with SGDA.</li></ul><ul id="7222b6f9-506c-4b2b-9251-b2ce69395e62" class="bulleted-list"><li style="list-style-type:disc">SGDA updates the parameters (slope and intercept of the line) based on the gradient of the loss function.</li></ul><ul id="40a79626-0704-4385-9501-e2746f8c0842" class="bulleted-list"><li style="list-style-type:disc">The parameters converge to values that minimize the mean squared error.<figure id="2b74ed28-eab0-40cc-8acd-66bc209a42e1" class="image"><a href="https://private-user-images.githubusercontent.com/99719265/307491219-9adcb7b6-a45e-403a-a558-77cc7456b7a0.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDg3NDU1MDIsIm5iZiI6MTcwODc0NTIwMiwicGF0aCI6Ii85OTcxOTI2NS8zMDc0OTEyMTktOWFkY2I3YjYtYTQ1ZS00MDNhLWE1NTgtNzdjYzc0NTZiN2EwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMjQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjI0VDAzMjY0MlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTRlNDVlZDU2MmI5NzVlNTJkOTRkNTJlNWQ2NzY3YzdmM2E1NzgwODRjNmI0Y2E2ZjNmYmQxODQ5NzUyOGYyZmYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.fepMPf6igIp1wF3hg8WDiZLVedqXQwl-Q0U-GVPzD88"><img style="width:1627px" src="https://private-user-images.githubusercontent.com/99719265/307491219-9adcb7b6-a45e-403a-a558-77cc7456b7a0.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDg3NDU1MDIsIm5iZiI6MTcwODc0NTIwMiwicGF0aCI6Ii85OTcxOTI2NS8zMDc0OTEyMTktOWFkY2I3YjYtYTQ1ZS00MDNhLWE1NTgtNzdjYzc0NTZiN2EwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMjQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjI0VDAzMjY0MlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTRlNDVlZDU2MmI5NzVlNTJkOTRkNTJlNWQ2NzY3YzdmM2E1NzgwODRjNmI0Y2E2ZjNmYmQxODQ5NzUyOGYyZmYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.fepMPf6igIp1wF3hg8WDiZLVedqXQwl-Q0U-GVPzD88"/></a></figure><hr id="efe70f4d-8310-4ddc-83a4-4f7f84aefb47"/><hr id="a792d5e5-a626-41f1-95c8-fd2c48604614"/></li></ul><p id="7358ef52-5d45-458f-9f2a-2007fdf06872" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
