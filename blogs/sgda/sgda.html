@@ -108,23 +108,23 @@
 	  </div>
 	  <div class="section">
 		<p>Published on Dec 16, 2023</p>
-		<h3>This post will be a culmination of:</h3>
+		<h3>will be covering following topic from concept to code</h3>
 		<ol>
-		  <li>Basic notion of SGDA.</li>
-		  <li>Key concepts necessary to understand SGD:</li>
-		  <li>The algorithm.</li>
-		  <li>Benefits &amp; Challenges of SGDA.</li>
-		  <li>An example in the field of ML with a code snippet.</li>
+		  <li>Introduction to SGDA:</li>
+		  <li>important concepts to understand the SGDA</li>
+		  <li>The SGD algorithm.</li>
+		  <li>where to use ? </li>
+		  <li>code</li>
 		</ol>
-		<p>So please stick around till you reach the snippet!</p>
+		
 	  </div>
 	  
 	  <div class="section">
-		<h2>1. Basic notion of SGDA:</h2>
+		<h2>1.Introduction to SGDA:</h2>
 		<p>SGDA is an optimization algorithm that's widely used in ML/Optimization tasks. It's an extension of the traditional gradient descent method that aims to efficiently minimize (or maximize) an objective function. It iteratively updates the model's parameters based on small random subsets of the data. This approach allows SGD to handle large datasets more efficiently compared to traditional gradient descent.</p>
 	  </div>
 	  <div class="section">
-		<h2>2. Key concepts necessary to understand SGDA:</h2>
+		<h2>2. Important concepts to understand the SGDA</h2>
 		<p><strong>Objective Function:</strong> In ML, the objective function represents the "cost" or "loss" associated with the model's predictions compared to the actual data. The goal is to minimize this function to find the best-fitting model parameters.</p>
 		<p><strong>Gradient:</strong> The gradient of the objective function indicates the direction of steepest increase. In optimization, the gradient points towards the optimal solution. Minimizing the negative gradient moves the solution closer to the minimum of the function.</p>
 		<p><strong>Learning Rate:</strong> The learning rate 'α' determines the step size of parameter updates. A large learning rate might lead to overshooting the minimum, while a small learning rate can slow down convergence. It's a hyperparameter that needs to be carefully tuned.</p>
@@ -159,7 +159,7 @@
 	  </div>
 	  
 	  <div class="section">
-		<h2>4. Benefits of SGDA:</h2>
+		<h2>4. Where to use ? </h2>
 		<ul>
 		  <li><strong>Efficiency:</strong> Using small mini-batches instead of the entire dataset makes computations faster and requires less memory, making SGDA suitable for large datasets.</li>
 		  <li><strong>Stochastic Nature:</strong> The randomness introduced by using mini-batches adds noise to the optimization process. This noise can help escape local minima and explore the parameter space more effectively.</li>
@@ -176,7 +176,7 @@
 		</ul>
 	  </div>
 	  <div class="section">
-		<h2>5. An example in the field of ML with a code snippet:</h2>
+		<h2>5. Code </h2>
 		<p>Linear regression with SGDA.</p>
 		<p>SGDA updates the parameters (slope and intercept of the line) based on the gradient of the loss function.</p>
 		<p>The parameters converge to values that minimize the mean squared error.</p>
