@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <style>
+   body {
+     background-color: #1E1E1E;
+     color: #CFCFCF;
+     font-family: 'Courier New', Courier, monospace;
+     margin: 0;
+     padding: 0;
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start;
+     align-items: center;
+     min-height: 100vh;
+   }
+
+   .container {
+     width: 80%;
+     max-width: 800px;
+     padding: 20px;
+     margin-top: 40px;
+   }
+
+   .nav {
+     text-align: right;
+     margin-bottom: 20px;
+   }
+
+   .nav a {
+     color: #8BE9FD;
+     text-decoration: none;
+     margin-left: 10px;
+   }
+
+   .nav a:hover {
+     text-decoration: underline;
+   }
+
+   .section {
+     margin-bottom: 40px;
+   }
+
+   .section h1, .section h2, .section h4, .section h5 {
+     color: #FF79C6;
+     border-bottom: 1px solid #FF79C6;
+     padding-bottom: 5px;
+     margin-bottom: 10px;
+   }
+
+   .section p, .section ul, .section li {
+     line-height: 1.6;
+   }
+
+   .section ul {
+     list-style: none;
+     padding-left: 0;
+   }
+
+   .section ul li {
+     margin-bottom: 10px;
+   }
+
+   .section ul li::before {
+     content: '';
+     display: inline-block;
+     width: 10px;
+     height: 10px;
+     background-color: #FF79C6;
+     border-radius: 50%;
+     margin-right: 10px;
+   }
+
+   a {
+     color: #50FA7B;
+     text-decoration: none;
+   }
+
+   a:hover {
+     text-decoration: underline;
+   }
+
+   .footer {
+     text-align: center;
+     border-top: 1px solid #FF79C6;
+     padding-top: 10px;
+   }
+
+   .footer a {
+     color: #BD93F9;
+     text-decoration: none;
+     margin: 0 5px;
+   }
+
+   .footer a:hover {
+     text-decoration: underline;
+   }
+ </style>
+</head>
+<body>
+	<div class="container">
+	  <div class="section">
+		<h1>On the Stochastic Gradient Descent Algorithm (SGDA) </h1>
+		
+	  </div>
+	  <div class="section">
+		<p>Published on Dec 16, 2023</p>
+		<p>This post will be a culmination of:</p>
+		<ol>
+		  <li>Basic notion of SGDA.</li>
+		  <li>Key concepts necessary to understand SGD:</li>
+		  <li>The algorithm.</li>
+		  <li>Benefits &amp; Challenges of SGDA.</li>
+		  <li>An example in the field of ML with a code snippet.</li>
+		</ol>
+		<p>So please stick around till you reach the snippet!</p>
+	  </div>
+	  
+	  <div class="section">
+		<h2>1. Basic notion of SGDA:</h2>
+		<p>SGDA is an optimization algorithm that's widely used in ML/Optimization tasks. It's an extension of the traditional gradient descent method that aims to efficiently minimize (or maximize) an objective function. It iteratively updates the model's parameters based on small random subsets of the data. This approach allows SGD to handle large datasets more efficiently compared to traditional gradient descent.</p>
+	  </div>
+	  <div class="section">
+		<h2>2. Key concepts necessary to understand SGDA:</h2>
+		<p><strong>Objective Function:</strong> In ML, the objective function represents the "cost" or "loss" associated with the model's predictions compared to the actual data. The goal is to minimize this function to find the best-fitting model parameters.</p>
+		<p><strong>Gradient:</strong> The gradient of the objective function indicates the direction of steepest increase. In optimization, the gradient points towards the optimal solution. Minimizing the negative gradient moves the solution closer to the minimum of the function.</p>
+		<p><strong>Learning Rate:</strong> The learning rate 'α' determines the step size of parameter updates. A large learning rate might lead to overshooting the minimum, while a small learning rate can slow down convergence. It's a hyperparameter that needs to be carefully tuned.</p>
+		<p><strong>Batch Size:</strong> In traditional gradient descent, the entire dataset is used to compute the gradient in each iteration. In SGD, a random subset (mini-batch) of the data is used. The size of this subset is the batch size.</p>
+	  </div>
+	  <div class="section">
+		<h2>3. The SGD Algorithm:</h2>
+		<p><strong>What is the underlying problem?</strong></p>
+		<p>Given an objective function 𝒻(θ) that needs to be minimized (or maximized) with respect to parameters θ, and a dataset 𝒟 consisting of data points (xᵢ,yᵢ).</p>
+		<p><strong>Step 1</strong> Initialization: Choose an initial guess for the parameters θ₀.</p>
+		<p><strong>Step 2</strong> Hyperparameters:</p>
+		<ul>
+		  <li>Choose the learning rate α.</li>
+		  <li>Choose the number of iterations T.</li>
+		</ul>
+		<p><strong>Step 3</strong> Iterations: For t=1 to T:</p>
+		<ul>
+		  <li>Randomly shuffle 𝒟.</li>
+		  <li>Compute the gradient of the loss function w.r.t θ using (xᵢ.yᵢ): ∇𝒻ᵢ(θ)=∂/∂θ Loss(yᵢ,𝒻(xᵢ;θ)).</li>
+		  <li>Update the parameters using the stochastic gradient and learning rate: θ(t+1)=θ(t)−α∇𝒻ᵢ(θ(t)).</li>
+		</ul>
+		<p><strong>Step 4</strong> Convergence check: Monitor the change in the objective function or the norm of the gradient. Stop if the change is below a predefined threshold, indicating convergence, or if the maximum number of iterations T is reached.</p>
+		<p><strong>Step 5</strong> Output: Return the final parameter values θ(T), which are the estimated optimal parameters that minimize (or maximize) the objective function.</p>
+		<p><strong>Some notes on SGDA:</strong></p>
+		<ul>
+		  <li>The objective function 𝒻(θ) represents the loss or cost function that measures the discrepancy between model predictions and actual data.</li>
+		  <li>The gradient ∇𝒻ᵢ(θ) represents the direction of steepest increase of the loss function with respect to the current data point.</li>
+		  <li>In practice, stochastic gradient descent is often implemented using mini-batches (subset of the dataset) to balance computational efficiency and gradient noise.</li>
+		  <li>Learning rate α determines the step size of each update. It's a critical hyperparameter that affects convergence.</li>
+		  <li>The convergence criterion could be based on the change in the objective function or the norm of the gradient. It ensures that the algorithm stops when further updates don't result in significant improvements.</li>
+		</ul>
+	  </div>
+	  
+	  <div class="section">
+		<h2>4. Benefits of SGDA:</h2>
+		<ul>
+		  <li><strong>Efficiency:</strong> Using small mini-batches instead of the entire dataset makes computations faster and requires less memory, making SGDA suitable for large datasets.</li>
+		  <li><strong>Stochastic Nature:</strong> The randomness introduced by using mini-batches adds noise to the optimization process. This noise can help escape local minima and explore the parameter space more effectively.</li>
+		  <li><strong>Online Learning:</strong> SGDA can be used for online learning, where models are updated continuously as new data becomes available.</li>
+		  <li><strong>Parallelization:</strong> SGDA can be easily parallelized since each mini-batch computation is independent.</li>
+		</ul>
+		<h2>Drawbacks/Challenges of SGDA:</h2>
+		<ul>
+		  <li><strong>Learning Rate:</strong> Choosing the appropriate learning rate is crucial. A learning rate that's too high can lead to instability, and one that's too low can slow down convergence.</li>
+		  <li><strong>Learning Rate Scheduling:</strong> Adaptive learning rate methods, such as AdaGrad, RMSProp, and Adam, adjust the learning rate during training to mitigate the need for manual tuning.</li>
+		  <li><strong>Noise:</strong> While noise can help escape local minima, it can also lead to convergence to suboptimal solutions.</li>
+		  <li><strong>Convergence:</strong> SGDA might converge to a solution close to the minimum, but not exactly at the minimum, due to the randomness and noisy updates.</li>
+		  <li><strong>Batch Size:</strong> The choice of batch size affects the trade-off between computation time and convergence stability.</li>
+		</ul>
+	  </div>
+	  <div class="section">
+		<h2>5. An example in the field of ML with a code snippet:</h2>
+		<p>Linear regression with SGDA.</p>
+		<p>SGDA updates the parameters (slope and intercept of the line) based on the gradient of the loss function.</p>
+		<p>The parameters converge to values that minimize the mean squared error.</p>
+		<pre><code class="language-python">import numpy as np
+  
+  # Generate toy data
+  X = np.random.rand(100, 1)
+  y = 2 + 3 * X + np.random.randn(100, 1)
+  
+  # Initialize parameters
+  theta = np.random.randn(2, 1)
+  
+  # Hyperparameters
+  iterations = 1000
+  alpha = 0.01
+  
+  # Stochastic Gradient Descent
+  for i in range(iterations):
+	  # Randomly shuffle the data
+	  indices = np.random.permutation(100)
+	  X_shuffle = X[indices]
+	  y_shuffle = y[indices]
+  
+	  for j in range(100):
+		  # Compute gradient and update parameters
+		  x_i = X_shuffle[j].reshape(1, 1)
+		  y_i = y_shuffle[j].reshape(1, 1)
+		  grad = -(y_i - theta.T @ x_i) * x_i
+		  theta = theta - alpha * grad.T
+  
+  print(f"Estimated parameters: {theta.flatten()}")</code></pre>
+	  </div>
+	  <div class="footer">
+		<a href="">[Home]</a>
+		
+	  </div>
+	</div>
+  </body>
+  </html>
