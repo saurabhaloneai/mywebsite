@@ -328,3 +328,9 @@ p code {
 /* h2{
     color: #FF0000;
 } */
+
+@media (max-width: 768px) {
+    .toc {
+        display: none;
+    }
+}
