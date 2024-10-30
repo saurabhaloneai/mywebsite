@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/libre-baskerville/1.0.0/css/libre-baskerville.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/contrib/auto-render.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/libre-baskerville/1.0.0/css/libre-baskerville.min.css" rel="stylesheet">
+    <!-- Add Lucide Icons for the copy icon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    
+
+</head>
+<body>
+    <nav class="top-nav">
+        [<a href="blogs/blogs.html">blog</a>]
+        [<a href="https://saurabhai.com">home</a>] 
+        [<a href="https://x.com/saurabhalonee" target="_blank">twitter</a>] 
+        [<a href="https://github.com/saurabhaloneai" target="_blank">github</a>] 
+    </nav>
+    
+    <div class="content-wrapper">
+        <aside class="toc">
+            <div class="toc-container">
+                <h2>Contents</h2>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#transformer">What is Transformer ? </a></li>
+                    <li><a href="#preprocessing">Data Preprocessing</a></li>
+                    <li><a href="#architecture">Model Architecture</a></li>
+                    <li><a href="#training">Training Process</a></li>
+                    <li><a href="#inference">Inference Optimization</a></li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <article>
+                <div class="article-header">
+                    <h1>The Tale of Large Language Models</h1>
+                    <span class="date">November 2024</span>
+                </div>
+                
+                <section id="introduction">
+                    <p>I have spent the last few months understanding Large Language Models(LLMs) from first principles, and 
+                        I will be sharing my perspective in this post. The goal of this post is to cover all parts of LLMs, 
+                        from the foundational concepts such as embedding and data preprocessing techniques, to architecture, 
+                        training, and inference optimization techniques.</p>
+                
+
+                         <p>The Era of LLMs started with the 'Attention is all you need' paper<a href="#ref1" class="citation">[1]</a>, 
+                            which introduced the Transformer architecture that became the backbone of today's so called AI.
+                             Almost every new model in nlp uses the Transformer as a core building block. This paper was released in 2017, 
+                             and since then there have been some minor changes to this architecture. So I will be covering the Llama 3 LLM architecture<a href="#ref2" class="citation">[2]</a>, which represents the new structure derived from the vanilla Transformer.</p>
+
+                </section>
+                <div class="note">
+                    <div class="note-header">
+                        📝 NOTE
+                    </div>
+                    <p>This post assumes that you have experience with Python, have a foundational understanding of deep learning, 
+                        and are familiar with university-level mathematics. I will first explain the concept, 
+                        followed by implementing it using both NumPy and PyTorch. There are two main reasons to write this post: 
+                        First, why not? Second, I want to come back to this post whenever I need to revise this topic rather than using my notes (which are so messy). 
+
+        
+                    </p>
+                </div>
+
+                <section id = "transformer">
+
+                    <h3>What is Transformers ?</h3>
+                    <p>
+                        A Transformer <a href="#figure1" class="figure-ref">Figure 1</a>, is neural network architecture which was desined for language to language translation and the Transformer, based solely on attention mechanisms. 
+                    </p>
+                    <figure id="figure1">
+                    <div class="image-container">
+                        <img src="../blogs/images/transformers.png" alt="Description of the image" width="800" height="200">
+                        <p class="image-caption">Fig.1</p>
+                    </div>
+                </figure>
+
+                </section> 
+    <!-- For code blocks<!-- Display math -->
+
+
+<!-- Inline math -->
+<!-- At the end of your article -->
+<section class="references">
+    <h2>References</h2>
+    <ol>
+        <li id="ref1">
+            <em>Attention is all you need</em>. 
+            <a href="https://arxiv.org/abs/1706.03762" target="_blank">[Link]</a>
+        </li>
+        <li id="ref2">
+        
+            <em>Llama 3: A more capable and refined language model</em>.
+            <a href="https://ai.meta.com/llama/" target="_blank">[Link]</a>
+        </li>
+    </ol>
+</section>
+
+
+            </article>
+        </main>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
